@@ -6,9 +6,9 @@ import kotlinx.coroutines.*
 import org.springframework.stereotype.Service
 import java.util.*
 import java.util.concurrent.Executors
-val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+//val dispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
 @Service
-class PlanSyncService(private val sstSyncService: SstSyncService) : CoroutineScope by CoroutineScope(dispatcher) {
+class PlanSyncService(private val sstSyncService: SstSyncService) : CoroutineScope by CoroutineScope(Dispatchers.IO) {
 
     fun syncPlans(request: PlanSyncRequest) {
 
@@ -16,7 +16,7 @@ class PlanSyncService(private val sstSyncService: SstSyncService) : CoroutineSco
         planIds.map { planId -> async {
 
                     try {
-                        withTimeout(50) {
+                        withTimeout(5000) {
                             sstSyncService.planSync(planId)
                         }
                     } catch (e: TimeoutCancellationException) {
